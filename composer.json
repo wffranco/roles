@@ -1,0 +1,28 @@
+{
+    "name": "wffranco/roles",
+    "description": "Package for handling roles and permissions in Laravel 5.8+",
+    "keywords": ["roles", "permissions", "auth", "laravel"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Willem Franco",
+            "email": "willemfranco@gmail.com"
+        }
+    ],
+    "repositories": [
+        {
+            "url": "git@github.com:wffranco/laravel-helpers.git",
+            "type": "vcs"
+        }
+    ],
+    "require": {
+        "php": ">=7.1.3",
+        "laravel/framework": "5.8.*",
+        "wffranco/laravel-helpers": "dev-master"
+    },
+    "autoload": {
+        "psr-0": {
+            "Wffranco\\Roles": "src/"
+        }
+    }
+}
