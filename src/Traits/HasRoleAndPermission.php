@@ -3,7 +3,7 @@
 namespace Wffranco\Roles\Traits;
 
 use Wffranco\Helpers\AndOr;
-use Wffranco\Helpers\Str;
+use Wffranco\Helpers\Str as WStr;
 use Wffranco\Roles\Models\Role;
 use Wffranco\Roles\Models\Permission;
 use Illuminate\Support\Str as LStr;
@@ -53,15 +53,15 @@ trait HasRoleAndPermission
      * @param bool $all
      * @return bool
      */
-    public function is($roles, $all = false)
+    public function is($roles)
     {
         if ($this->isPretendEnabled()) {
             return $this->pretend('is');
         }
 
         return AndOr::validate($roles, function($role) {
-            return $this->hasRole($role);
-        }, $all);
+            return $this->hasRole(WStr::dot($role));
+        });
     }
 
     /**
@@ -171,17 +171,17 @@ trait HasRoleAndPermission
      * @param bool $all
      * @return bool
      */
-    public function can($permissions, $all = false)
+    public function can($permissions, ...$more)
     {
-        if (!is_bool($all)) return parent::can($permission, $all); //use original 'can' method
+        if (count($more)) return parent::can($permission, ...$more); //use original 'can' method
 
         if ($this->isPretendEnabled()) {
             return $this->pretend('can');
         }
 
         return AndOr::validate($permissions, function($permission) {
-            return $this->hasPermission($permission);
-        }, $all);
+            return $this->hasPermission(WStr::dot($permission));
+        });
     }
 
     /**
@@ -217,7 +217,7 @@ trait HasRoleAndPermission
         }
 
         return AndOr::validate($providedPermissions, function($permission) use ($entity) {
-            return $this->isAllowed($permission, $entity);
+            return $this->isAllowed(WStr::dot($permission), $entity);
         });
     }
 
@@ -301,6 +301,25 @@ trait HasRoleAndPermission
     }
 
     /**
+     * Check if the user has roles and/or permissions.
+     *
+     * @param int|string $permission
+     * @return bool
+     */
+    public function has($rules)
+    {
+        if ($this->isPretendEnabled()) {
+            return $this->pretend('has');
+        }
+
+        return AndOr::validate($rules, function($rule) {
+            list($type, $value) = explode(':', $rule);
+            return $this->{WStr::camel('has.'.$type)}(WStr::dot($value));
+        });
+    }
+
+
+    /**
      * Handle dynamic method calls.
      *
      * @param string $method
@@ -310,11 +329,11 @@ trait HasRoleAndPermission
     public function __call($method, $parameters)
     {
         if (starts_with($method, 'is')) {
-            return $this->is(Str::dot(substr($method, 2), config('roles.separator')));
+            return $this->is(WStr::dot(substr($method, 2), config('roles.separator')));
         } elseif (starts_with($method, 'can')) {
-            return $this->can(Str::dot(substr($method, 3), config('roles.separator')));
+            return $this->can(WStr::dot(substr($method, 3), config('roles.separator')));
         } elseif (starts_with($method, 'allowed')) {
-            return $this->allowed(Str::dot(substr($method, 7), config('roles.separator')), $parameters[0], (isset($parameters[1])) ? $parameters[1] : true, (isset($parameters[2])) ? $parameters[2] : 'user_id');
+            return $this->allowed(WStr::dot(substr($method, 7), config('roles.separator')), $parameters[0], (isset($parameters[1])) ? $parameters[1] : true, (isset($parameters[2])) ? $parameters[2] : 'user_id');
         }
 
         return parent::__call($method, $parameters);

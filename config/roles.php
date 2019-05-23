@@ -50,8 +50,8 @@ return [
     |--------------------------------------------------------------------------
     |
     | You can pretend or simulate package behavior no matter what is in your
-    | database. It is really useful when you are testing you application.
-    | Set up what will methods is(), can() and allowed() return.
+    | database. It is really useful when you are testing your application.
+    | Set up what will methods is(), can(), has() and allowed() return.
     |
     */
 
@@ -62,6 +62,7 @@ return [
         'options' => [
             'is' => true,
             'can' => true,
+            'has' => true,
             'allowed' => true,
         ],
 

@@ -8,13 +8,14 @@ Package for handling roles and permissions in Laravel 5.8+.
     - [Config File And Migrations](#config-file-and-migrations)
     - [HasRoleAndPermission Trait And Contract](#hasroleandpermission-trait-and-contract)
 - [Usage](#usage)
+    - [Levels](#levels)
     - [Creating Roles](#creating-roles)
     - [Attaching And Detaching Roles](#attaching-and-detaching-roles)
     - [Checking For Roles](#checking-for-roles)
-    - [Levels](#levels)
     - [Creating Permissions](#creating-permissions)
     - [Attaching And Detaching Permissions](#attaching-and-detaching-permissions)
     - [Checking For Permissions](#checking-for-permissions)
+    - [Join Checking Roles/Permissions](#join-checking-roles/permissions)
     - [Permissions Inheriting](#permissions-inheriting)
     - [Entity Check](#entity-check)
     - [Blade Extensions](#blade-extensions)
@@ -103,6 +104,20 @@ And that's it!
 
 ## Usage
 
+### Levels
+
+When you are creating roles, there is optional parameter `level`. It is set to `1` by default, but you can overwrite it and then you can do something like this:
+
+```php
+if ($user->level() > 4) {
+    //
+}
+```
+
+> If user has multiple roles, method `level` returns the highest one.
+
+`Level` has also big effect on inheriting permissions. About it later.
+
 ### Creating Roles
 
 ```php
@@ -183,20 +198,6 @@ if ($user->is('admin&moderator')) {
 You can mix both operators. Use parentheses to group them (only strings).
 You can also use the method `hasRole`.
 
-### Levels
-
-When you are creating roles, there is optional parameter `level`. It is set to `1` by default, but you can overwrite it and then you can do something like this:
-
-```php
-if ($user->level() > 4) {
-    //
-}
-```
-
-> If user has multiple roles, method `level` returns the highest one.
-
-`Level` has also big effect on inheriting permissions. About it later.
-
 ### Creating Permissions
 
 It's very simple thanks to `Permission` model.
@@ -253,6 +254,33 @@ if ($user->canDeleteUsers()) {
 
 You can check for multiple permissions the same way as roles.
 You can also use `hasPermission`.
+
+### Join Checking Roles/Permissions
+
+Supose you have a blog where only can publish admins or moderators with write permission.
+Right now you can do it that way:
+
+```php
+if ($user->isAdmin() || $user->isModerator() && $user->can('blog.write')) {
+}
+// or
+if ($user->is('admin') || $user->is('moderator') && $user->can('blog.write')) {
+}
+```
+
+For complex rules, you can combine roles & permissions with the `has` method.
+Now you can do something like that:
+```php
+if ($user->has('role:admin|role:moderator&permission:blog.write')) {
+}
+```
+
+As in PHP, in all 3 methods (is/can/has) the `or` operator evaluate at last, unless you use parentheses.
+```php
+// Force 'or' first.
+if ($user->has('(role:admin|role:moderator)&permission:blog.write')) {
+}
+```
 
 ### Permissions Inheriting
 
