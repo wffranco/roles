@@ -90,9 +90,9 @@ Include `HasRoleAndPermission` trait and also implement `HasRoleAndPermission` c
 use Wffranco\Roles\Traits\HasRoleAndPermission;
 use Wffranco\Roles\Contracts\HasRoleAndPermission as HasRoleAndPermissionContract;
 
-class User extends Model implements AuthenticatableContract, CanResetPasswordContract, HasRoleAndPermissionContract
+class User extends Authenticatable implements HasRoleAndPermissionContract
 {
-    use Authenticatable, CanResetPassword, HasRoleAndPermission;
+    use Notifiable, HasRoleAndPermission;
 ```
 
 And that's it!
