@@ -4,6 +4,8 @@ namespace Wffranco\Roles\Traits;
 
 use Wffranco\Helpers\AndOr;
 use Wffranco\Helpers\Str;
+use Wffranco\Roles\Models\Role;
+use Wffranco\Roles\Models\Permission;
 use Illuminate\Support\Str as LStr;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
@@ -70,9 +72,9 @@ trait HasRoleAndPermission
      */
     public function hasRole($role)
     {
-        return $this->getRoles()->contains(function ($key, $value) use ($role) {
-            return $role == $value->id || LStr::is($role, $value->slug);
-        });
+        $role instanceof Role or $role = Role::find($role);
+
+        return $this->getRoles()->contains($role);
     }
 
     /**
@@ -188,9 +190,9 @@ trait HasRoleAndPermission
      */
     public function hasPermission($permission)
     {
-        return $this->getPermissions()->contains(function ($key, $value) use ($permission) {
-            return $permission == $value->id || LStr::is($permission, $value->slug);
-        });
+        $permission instanceof Permission or $permission = Permission::find($permission);
+
+        return $this->getPermissions()->contains($permission);
     }
 
     /**
