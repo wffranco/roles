@@ -35,6 +35,10 @@ Pull this package in through Composer (file `composer.json`).
 {
     "repositories": [
         {
+            "url": "git@github.com:wffranco/laravel-helpers.git",
+            "type": "vcs"
+        },
+        {
             "url": "git@github.com:wffranco/roles.git",
             "type": "vcs"
         }
@@ -154,29 +158,30 @@ if ($user->isAdmin()) {
 }
 ```
 
-And of course, there is a way to check for multiple roles:
+And of course, there is a way to check for multiple roles, using and/or operators:
 
 ```php
 if ($user->is('admin|moderator')) {
     /*
     | Or alternatively:
     | $user->is('admin, moderator'), $user->is(['admin', 'moderator']),
-    | $user->isOne('admin|moderator'), $user->isOne('admin, moderator'), $user->isOne(['admin', 'moderator'])
     */
 
     // if user has at least one role
 }
 
-if ($user->is('admin|moderator', true)) {
+if ($user->is('admin&moderator')) {
     /*
     | Or alternatively:
     | $user->is('admin, moderator', true), $user->is(['admin', 'moderator'], true),
-    | $user->isAll('admin|moderator'), $user->isAll('admin, moderator'), $user->isAll(['admin', 'moderator'])
+    | $user->is([['admin', 'moderator']])
     */
 
     // if user has all roles
 }
 ```
+You can mix both operators. Use parentheses to group them (only strings).
+You can also use the method `hasRole`.
 
 ### Levels
 
@@ -246,7 +251,8 @@ if ($user->canDeleteUsers()) {
 }
 ```
 
-You can check for multiple permissions the same way as roles. You can make use of additional methods like `canOne`, `canAll` or `hasPermission`.
+You can check for multiple permissions the same way as roles.
+You can also use `hasPermission`.
 
 ### Permissions Inheriting
 
