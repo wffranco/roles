@@ -2,11 +2,10 @@
 
 namespace Wffranco\Roles\Traits;
 
+use Wffranco\Helpers\Str;
 use Wffranco\Helpers\AndOr;
-use Wffranco\Helpers\Str as WStr;
 use Wffranco\Roles\Models\Role;
 use Wffranco\Roles\Models\Permission;
-use Illuminate\Support\Str as LStr;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
 
@@ -60,7 +59,7 @@ trait HasRoleAndPermission
         }
 
         return AndOr::validate($roles, function($role) {
-            return $this->hasRole(WStr::dot($role));
+            return $this->hasRole(Str::dot($role, config('roles.separator', '.')));
         });
     }
 
@@ -180,7 +179,7 @@ trait HasRoleAndPermission
         }
 
         return AndOr::validate($permissions, function($permission) {
-            return $this->hasPermission(WStr::dot($permission));
+            return $this->hasPermission(Str::dot($permission, config('roles.separator', '.')));
         });
     }
 
@@ -217,7 +216,7 @@ trait HasRoleAndPermission
         }
 
         return AndOr::validate($providedPermissions, function($permission) use ($entity) {
-            return $this->isAllowed(WStr::dot($permission), $entity);
+            return $this->isAllowed(Str::dot($permission, config('roles.separator', '.')), $entity);
         });
     }
 
@@ -314,7 +313,7 @@ trait HasRoleAndPermission
 
         return AndOr::validate($rules, function($rule) {
             list($type, $value) = explode(':', $rule);
-            return $this->{WStr::camel('has.'.$type)}(WStr::dot($value));
+            return $this->{Str::camel('has.'.$type)}(Str::dot($value, config('roles.separator', '.')));
         });
     }
 
@@ -329,11 +328,11 @@ trait HasRoleAndPermission
     public function __call($method, $parameters)
     {
         if (starts_with($method, 'is')) {
-            return $this->is(WStr::dot(substr($method, 2), config('roles.separator')));
+            return $this->is(Str::dot(substr($method, 2), config('roles.separator', '.')));
         } elseif (starts_with($method, 'can')) {
-            return $this->can(WStr::dot(substr($method, 3), config('roles.separator')));
+            return $this->can(Str::dot(substr($method, 3), config('roles.separator', '.')));
         } elseif (starts_with($method, 'allowed')) {
-            return $this->allowed(WStr::dot(substr($method, 7), config('roles.separator')), $parameters[0], (isset($parameters[1])) ? $parameters[1] : true, (isset($parameters[2])) ? $parameters[2] : 'user_id');
+            return $this->allowed(Str::dot(substr($method, 7), config('roles.separator', '.')), $parameters[0], (isset($parameters[1])) ? $parameters[1] : true, (isset($parameters[2])) ? $parameters[2] : 'user_id');
         }
 
         return parent::__call($method, $parameters);
