@@ -170,9 +170,9 @@ trait HasRoleAndPermission
      * @param bool $all
      * @return bool
      */
-    public function can($permissions, ...$more)
+    public function can($permissions, $more = false)
     {
-        if (count($more)) return parent::can($permission, ...$more); //use original 'can' method
+        if (is_array($more)) return parent::can($permission, $more); //use original 'can' method
 
         if ($this->isPretendEnabled()) {
             return $this->pretend('can');

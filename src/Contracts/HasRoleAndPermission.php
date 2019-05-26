@@ -27,7 +27,7 @@ interface HasRoleAndPermission
      * @param bool $all
      * @return bool
      */
-    public function is($role, $all = false);
+    public function is($roles);
 
     /**
      * Check if the user has role.
@@ -95,7 +95,7 @@ interface HasRoleAndPermission
      * @param bool $all
      * @return bool
      */
-    public function can($permission, $all = false);
+    public function can($permission, $more = false);
 
     /**
      * Check if the user has a permission.
