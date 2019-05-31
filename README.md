@@ -163,7 +163,7 @@ And of course, there is a way to check for multiple roles, using and/or operator
 if ($user->is('admin|moderator')) {
     /*
     | Or alternatively:
-    | $user->is('admin, moderator'), $user->is(['admin', 'moderator']),
+    | $user->is(['admin', 'moderator']) // or operator: first braket
     */
 
     // if user has at least one role
@@ -172,15 +172,23 @@ if ($user->is('admin|moderator')) {
 if ($user->is('admin&moderator')) {
     /*
     | Or alternatively:
-    | $user->is('admin, moderator', true), $user->is(['admin', 'moderator'], true),
-    | $user->is([['admin', 'moderator']])
+    | $user->is([['admin', 'moderator']]) // and operator: second braket
     */
 
     // if user has all roles
 }
+
+// Mixed or/and
+if ($user->is('admin|moderator&publisher')) {
+    /*
+    | Or alternatively:
+    | $user->is(['admin', ['moderator', 'publisher']])
+    | $user->is(['admin', 'moderator&publisher'])
+    */
+}
 ```
-You can mix both operators. Use parentheses to group them (only strings).
-You can also use the method `hasRole`.
+You can mix operators, and parentheses (only in strings) to group conditions.
+You can also use the method `hasRole` instead of `is`.
 
 ### Creating Permissions
 
@@ -237,7 +245,7 @@ if ($user->canDeleteUsers()) {
 ```
 
 You can check for multiple permissions the same way as roles.
-You can also use `hasPermission`.
+You can also use `hasPermission` instead of `can`.
 
 ### Join Checking Roles/Permissions
 
@@ -257,12 +265,15 @@ Now you can do something like that:
 ```php
 if ($user->has('role:admin|role:moderator&permission:blog.write')) {
 }
+// you can even abbreviate role & permission to their first letter
+if ($user->has('r:admin|r:moderator&p:blog.write')) {
+}
 ```
 
 As in PHP, in all 3 methods (is/can/has) the `or` operator evaluate at last, unless you use parentheses.
 ```php
 // Force 'or' first.
-if ($user->has('(role:admin|role:moderator)&permission:blog.write')) {
+if ($user->has('(r:admin|r:moderator)&p:blog.write')) {
 }
 ```
 
@@ -358,23 +369,15 @@ protected $routeMiddleware = [
 Now you can easily protect your routes.
 
 ```php
-$router->get('/example', [
-    'as' => 'example',
-    'middleware' => 'role:admin',
-    'uses' => 'ExampleController@index',
-]);
+Route::middleware('role:admin')
+    ->get('/example', 'ExampleController@index');
 
-$router->post('/example', [
-    'as' => 'example',
-    'middleware' => 'permission:edit.articles',
-    'uses' => 'ExampleController@index',
-]);
+Route::middleware('permission:edit.articles')
+    ->post('/example', 'ExampleController@index');
 
-$router->get('/example', [
-    'as' => 'example',
-    'middleware' => 'level:2', // level >= 2
-    'uses' => 'ExampleController@index',
-]);
+Route::middleware('level:2')
+    ->get('/example', 'ExampleController@index');
+
 ```
 
 It throws `\Wffranco\Roles\Exceptions\RoleDeniedException`, `\Wffranco\Roles\Exceptions\PermissionDeniedException` or `\Wffranco\Roles\Exceptions\LevelDeniedException` exceptions if it goes wrong.

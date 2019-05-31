@@ -313,6 +313,7 @@ trait HasRoleAndPermission
 
         return AndOr::validate($rules, function($rule) {
             list($type, $value) = explode(':', $rule);
+            $type = ['r' => 'role', 'p' => 'permission'][$type] ?? $type;
             return $this->{Str::camel('has.'.$type)}(Str::dot($value, config('roles.separator', '.')));
         });
     }
