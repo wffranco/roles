@@ -34,20 +34,10 @@ Pull this package in through Composer (file `composer.json`).
 
 ```js
 {
-    "repositories": [
-        {
-            "url": "git@github.com:wffranco/laravel-helpers.git",
-            "type": "vcs"
-        },
-        {
-            "url": "git@github.com:wffranco/roles.git",
-            "type": "vcs"
-        }
-    ],
     "require": {
         "php": ">=7.1.3",
         "laravel/framework": "5.8.*",
-        "wffranco/roles": "dev-master",
+        "wffranco/roles": "~1.0",
     }
 }
 ```
@@ -58,12 +48,6 @@ Add the package to your application service providers in `config/app.php` file.
 
 ```php
 'providers' => [
-
-    /*
-     * Laravel Framework Service Providers...
-     */
-    Illuminate\Foundation\Providers\ArtisanServiceProvider::class,
-    Illuminate\Auth\AuthServiceProvider::class,
     ...
 
     /**
@@ -89,7 +73,7 @@ And also run migrations.
 
 ### HasRoleAndPermission Trait And Contract
 
-Include `HasRoleAndPermission` trait and also implement `HasRoleAndPermission` contract inside your `User` model.
+Include `HasRoleAndPermission` trait and contract inside your `User` model.
 
 ```php
 use Wffranco\Roles\Traits\HasRoleAndPermission;
